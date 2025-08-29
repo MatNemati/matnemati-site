@@ -22,6 +22,15 @@ export default function Page() {
         <Hero3D />
         <div className="card">
           <h1 className="text-3xl font-bold">متین نعمتی</h1>
+          
+          <div className="flex justify-center my-3">
+            <img
+              src="/images/avatar.jpg"
+              alt="Matin Nemati portrait"
+              className="w-40 h-40 rounded-2xl object-cover border border-line shadow-soft"
+            />
+          </div>
+
           <p className="text-muted">{c.site.tagline}</p>
           <p className="mt-3 whitespace-pre-wrap">{c.about}</p>
         </div>
