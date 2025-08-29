@@ -24,3 +24,6 @@ a { color: theme('colors.acc'); text-decoration: none; }
 .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
 .lenis.lenis-stopped { overflow: hidden; }
 .lenis.lenis-scrolling iframe { pointer-events: none; }
+
+main .container, main section.card { text-align: center; }
+.card h1, .card h2, .card h3 { text-align: inherit; margin-left: auto; margin-right: auto; }
