@@ -40,9 +40,10 @@ export default function Header({ lang }: { lang: 'fa' | 'en' }) {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <Link href={otherLangHref} className="px-3 py-2 rounded-xl border border-line bg-card hover:bg-card/80">
+          <a href={otherLangHref} className="px-3 py-2 rounded-xl border border-line bg-card hover:bg-card/80">
             {lang === 'fa' ? 'EN' : 'فا'}
-          </Link>
+          </a>
+
         </div>
       </div>
     </header>
