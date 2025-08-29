@@ -41,7 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={`${plusJakarta.variable} ${vazir.variable} antialiased`}>
         {children}
-
+    
         {/* JSON-LD Person schema */}
         <script
           type="application/ld+json"
@@ -67,5 +67,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </body>
     </html>
+
   )
 }
