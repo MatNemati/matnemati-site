@@ -1,4 +1,3 @@
-
 import './globals.css'
 import type { Metadata } from 'next'
 import { Plus_Jakarta_Sans, Vazirmatn } from 'next/font/google'
@@ -8,15 +7,12 @@ const plusJakarta = Plus_Jakarta_Sans({
   variable: '--font-plusjakarta',
   weight: ['300','400','500','600','700'],
 })
+
 const vazir = Vazirmatn({
   subsets: ['arabic'],
   variable: '--font-vazir',
   weight: ['300','400','500','600','700'],
 })
-
-...
-<body className={`${plusJakarta.variable} ${vazir.variable} antialiased`}>
-
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://matnemati.ir'),
@@ -43,8 +39,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${vazir.variable} antialiased`}>
+      <body className={`${plusJakarta.variable} ${vazir.variable} antialiased`}>
         {children}
+
         {/* JSON-LD Person schema */}
         <script
           type="application/ld+json"
