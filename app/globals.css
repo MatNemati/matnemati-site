@@ -1,0 +1,26 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smooth scroll and Lenis support */
+html, body { height: 100%; }
+html { scroll-behavior: smooth; background: theme('colors.bg'); color: theme('colors.text'); }
+* { box-sizing: border-box; }
+a { color: theme('colors.acc'); text-decoration: none; }
+
+/* Containers */
+.container { @apply max-w-6xl mx-auto px-4; }
+
+/* Cards */
+.card { @apply rounded-2xl border border-line bg-card shadow-soft p-6; }
+
+/* RTL helpers */
+.rtl { direction: rtl; }
+.ltr { direction: ltr; }
+
+/* Lenis */
+.lenis.lenis-smooth { scroll-behavior: auto; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+.lenis.lenis-scrolling iframe { pointer-events: none; }
