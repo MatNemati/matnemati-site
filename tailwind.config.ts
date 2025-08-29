@@ -15,7 +15,7 @@ export default {
         text: "#e6e9ef",
         muted: "#9aa4b2",
         line: "#1f2432",
-        acc: "#2dd4bf"
+        acc: "#9aa4b2"
       },
       boxShadow: {
         soft: "0 10px 30px rgba(0,0,0,.25)"
