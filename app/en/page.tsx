@@ -4,6 +4,8 @@ import Hero3D from '@/components/Hero3D'
 import Section from '@/components/Section'
 import SmoothScroll from '@/components/SmoothScroll'
 import content from '@/content/en'
+import Background3D from '@/components/Background3D'
+
 
 export const dynamic = 'force-static'
 
@@ -11,6 +13,7 @@ export default function Page() {
   const c = content
   return (
     <main className="ltr">
+      <Background3D />
       <SmoothScroll />
       <Header lang="en" />
 
