@@ -56,7 +56,9 @@ function IsoBrain({ color = '#9aa4b2', resolution = 32 }: { color?: string; reso
       iso.addBall(0.5 + x, 0.5 + y, 0.5 + z, 0.06, params.strength)
     }
 
-    iso.addPlaneX(0.54)
+// Add a negative plane along X axis to simulate the median fissure
+    iso.addPlaneX(0.7, 0.5)
+
 
     const mat = iso.material as THREE.MeshStandardMaterial
     mat.color = new THREE.Color(color)
