@@ -1,6 +1,6 @@
 
 import Header from '@/components/Header'
-import Hero3D from '@/components/Hero3D'
+import Brain from '@/components/Brain'
 import Section from '@/components/Section'
 import SmoothScroll from '@/components/SmoothScroll'
 import content from '@/content/en'
@@ -16,10 +16,10 @@ export default function Page() {
       <Background3D />
       <SmoothScroll />
       <Header lang="en" />
+      <Brain />
 
       {/* HERO */}
-      <section id="home" className="container pt-10 space-y-6">
-        <Hero3D />
+      <section id="home" className="container pt-10 space-y-6 md:pr-[480px]">
         <div className="card">
           <h1 className="text-3xl font-bold">Matin Nemati</h1>
           <div className="flex justify-center my-3">
