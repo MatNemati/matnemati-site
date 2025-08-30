@@ -100,8 +100,8 @@ function BrainMeshes({ color = '#66e0ff' }: { color?: string }) {
 
 export default function BrainLabeled() {
   return (
-    <div className="fixed top-20 right-4 w-[380px] h-[380px] md:w-[520px] md:h-[520px] -z-0">
-      <Canvas camera={{ position: [0, 0, 3.4], fov: 45 }}>
+    <div className="fixed inset-0 -z-10">
+      <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
         <ambientLight intensity={0.7} />
         <directionalLight position={[4, 5, 6]} intensity={1.4} />
         <BrainMeshes />
