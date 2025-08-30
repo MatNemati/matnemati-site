@@ -1,10 +1,22 @@
 'use client'
 
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 import { useMemo, useRef } from 'react'
 import { MarchingCubes } from 'three/examples/jsm/objects/MarchingCubes.js'
+
+// Register Three.js class as an intrinsic JSX element for R3F
+extend({ MarchingCubes })
+
+// Optional: basic typing to silence TS when using <marchingCubes />
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      marchingCubes: any
+    }
+  }
+}
 
 /** Lightweight multi-frequency noise mixer */
 function mixNoise(t: number) {
@@ -76,7 +88,6 @@ function IsoBrain({ color = '#9aa4b2', resolution = 32 }: { color?: string; reso
 
   return (
     <group scale={[1.8, 1.8, 1.8]} position={[0, 0.05, 0]}>
-      {/* @ts-ignore */}
       <marchingCubes ref={ref} args={[resolution, new THREE.MeshStandardMaterial(), true, true]} />
     </group>
   )
