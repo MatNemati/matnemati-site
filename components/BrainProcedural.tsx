@@ -6,10 +6,12 @@ import * as THREE from 'three'
 import { useMemo, useRef } from 'react'
 import { MarchingCubes } from 'three/examples/jsm/objects/MarchingCubes.js'
 
-function n(t: number) {
+/** Lightweight multi-frequency noise mixer */
+function mixNoise(t: number) {
   return Math.sin(t) * 0.5 + Math.sin(t * 0.73 + 1.3) * 0.3 + Math.sin(t * 1.21 + 2.1) * 0.2
 }
 
+/** Procedural, brain-like iso-surface using metaballs + a median fissure plane */
 function IsoBrain({ color = '#9aa4b2', resolution = 32 }: { color?: string; resolution?: number }) {
   const ref = useRef<MarchingCubes>(null!)
 
@@ -20,6 +22,8 @@ function IsoBrain({ color = '#9aa4b2', resolution = 32 }: { color?: string; reso
     scaleX: 1.35,
     scaleY: 0.95,
     scaleZ: 1.65,
+    fissureStrength: 0.7, // plane strength
+    fissureOffset: 0.54,  // plane subtract/offset
   }
 
   const seeds = useMemo(() => {
@@ -34,36 +38,39 @@ function IsoBrain({ color = '#9aa4b2', resolution = 32 }: { color?: string; reso
     if (!iso) return
     iso.reset()
 
+    // left lobe
     for (let i = 0; i < params.balls; i++) {
-      const s = seeds[i]
-      const ux = n(t * 0.35 + s * 0.01)
-      const uy = n(t * 0.42 + s * 0.02)
-      const uz = n(t * 0.29 + s * 0.03)
+      const seed = seeds[i]
+      const ux = mixNoise(t * 0.35 + seed * 0.01)
+      const uy = mixNoise(t * 0.42 + seed * 0.02)
+      const uz = mixNoise(t * 0.29 + seed * 0.03)
       const x = -params.gap + (ux * 0.45) * params.scaleX
       const y = (uy * 0.55) * params.scaleY
       const z = (uz * 0.65) * params.scaleZ
       iso.addBall(0.5 + x, 0.5 + y, 0.5 + z, 0.06, params.strength)
     }
 
+    // right lobe
     for (let i = 0; i < params.balls; i++) {
-      const s = seeds[params.balls + i]
-      const ux = n(t * 0.33 + s * 0.01)
-      const uy = n(t * 0.41 + s * 0.02)
-      const uz = n(t * 0.27 + s * 0.03)
+      const seed = seeds[params.balls + i]
+      const ux = mixNoise(t * 0.33 + seed * 0.01)
+      const uy = mixNoise(t * 0.41 + seed * 0.02)
+      const uz = mixNoise(t * 0.27 + seed * 0.03)
       const x = +params.gap + (ux * 0.45) * params.scaleX
       const y = (uy * 0.55) * params.scaleY
       const z = (uz * 0.65) * params.scaleZ
       iso.addBall(0.5 + x, 0.5 + y, 0.5 + z, 0.06, params.strength)
     }
 
-    // median fissure
-    iso.addPlaneX(0.54)
+    // median fissure (X-plane): addPlaneX(strength, subtract)
+    iso.addPlaneX(params.fissureStrength, params.fissureOffset)
 
     const mat = iso.material as THREE.MeshStandardMaterial
     mat.color = new THREE.Color(color)
     mat.wireframe = true
     mat.transparent = true
     mat.opacity = 0.95
+
     iso.isolation = 80
   })
 
