@@ -1,92 +1,101 @@
 'use client'
 
-import { Canvas, useFrame, extend } from '@react-three/fiber'
+import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
-import { shaderMaterial } from '@react-three/drei'
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
+// MarchingCubes از مثال‌های سه‌جس
+// (نیازی به پکیج جدید نیست)
+import { MarchingCubes } from 'three/examples/jsm/objects/MarchingCubes.js'
 
-// --- Shader: کمی برآمدگی و بافت برای حس چین‌خوردگی مغز ---
-const BrainMaterial = shaderMaterial(
-  // uniforms
-  { uTime: 0, uColor: new THREE.Color('#86a8c8') },
-  // vertex shader
-  /* glsl */ `
-  varying vec3 vNormal;
-  varying vec3 vPos;
-  uniform float uTime;
-  // نویز ساده (value noise) برای موج‌دار کردن
-  float hash(vec3 p){ p = fract(p*0.3183099 + vec3(0.1,0.2,0.3)); p *= 17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }
-  float noise(vec3 p){
-    vec3 i = floor(p);
-    vec3 f = fract(p);
-    float n = mix(
-      mix(mix(hash(i+vec3(0,0,0)), hash(i+vec3(1,0,0)), f.x),
-          mix(hash(i+vec3(0,1,0)), hash(i+vec3(1,1,0)), f.x), f.y),
-      mix(mix(hash(i+vec3(0,0,1)), hash(i+vec3(1,0,1)), f.x),
-          mix(hash(i+vec3(0,1,1)), hash(i+vec3(1,1,1)), f.x), f.y), f.z);
-    return n;
-  }
-  void main(){
-    vNormal = normal;
-    vPos = position;
-    // کمی تغییر شکل شبه‌ژیراسیون برای حس چین‌خوردگی
-    float n = noise(normal*2.5 + uTime*0.2) * 0.12;
-    vec3 pos = position + normal * n;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-  }
-  `,
-  // fragment shader
-  /* glsl */ `
-  varying vec3 vNormal;
-  uniform vec3 uColor;
-  void main(){
-    // وایرفریم با خط‌های روشن روی بک‌گراند تیره
-    // چون از material وایرفریم استفاده می‌کنیم، اینجا فقط رنگ پایه می‌دهیم
-    gl_FragColor = vec4(uColor, 0.95);
-  }
-  `
-)
-extend({ BrainMaterial })
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      brainMaterial: any
-    }
-  }
+// نویز خیلی ساده برای حرکت نرم
+function snoise(t: number) {
+  return Math.sin(t) * 0.5 + Math.sin(t * 0.73 + 1.3) * 0.3 + Math.sin(t * 1.21 + 2.1) * 0.2
 }
 
-function Hemisphere({ x = 0.6 }: { x?: number }) {
-  const matRef = useRef<any>(null)
-  useFrame((state) => {
-    if (matRef.current) matRef.current.uTime = state.clock.getElapsedTime()
+function BrainIsosurface({
+  color = '#86a8c8', // اگر خاکستری‌تر می‌خوای: '#9aa4b2'
+  resolution = 32,   // کیفیت شبکه (۲۴–۴۰ مناسب است)
+}: { color?: string; resolution?: number }) {
+  const ref = useRef<MarchingCubes>(null!)
+
+  // پارامترهای شکل
+  const strength = 0.7 / ((Math.sqrt(2) - 1) / 2) // نرمالایز داخلی کلاس
+  const numBalls = 18 // تعداد متابال‌ها در هر نیم‌کره (جمعاً ~36)
+  const gap = 0.28    // فاصله‌ی دو نیم‌کره از هم (برای حس شیار میانی)
+  const scaleX = 1.35, scaleY = 0.95, scaleZ = 1.65 // تناسب کلی فرم (نه بیضی ساده)
+
+  // بذرهای اولیه‌ی مسیر متابال‌ها (برای ثابت‌بودن شکل)
+  const seeds = useMemo(() => {
+    const arr: number[] = []
+    for (let i = 0; i < numBalls * 2; i++) arr.push(Math.random() * 1000 + i * 17.17)
+    return arr
+  }, [])
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime()
+    const iso = ref.current
+    if (!iso) return
+
+    iso.reset()
+
+    // --- نیم‌کره چپ ---
+    for (let i = 0; i < numBalls; i++) {
+      const s = seeds[i]
+      // مسیرهای نرم و متفاوت
+      const ux = snoise(t * 0.35 + s * 0.01)
+      const uy = snoise(t * 0.42 + s * 0.02)
+      const uz = snoise(t * 0.29 + s * 0.03)
+      // جای‌گذاری داخل «حجم» با نسبت‌های اختصاصی
+      const x = -gap + (ux * 0.45) * scaleX
+      const y = (uy * 0.55) * scaleY
+      const z = (uz * 0.65) * scaleZ
+      iso.addBall(0.5 + x, 0.5 + y, 0.5 + z, 0.06, strength) // (x,y,z,r,strength)
+    }
+
+    // --- نیم‌کره راست ---
+    for (let i = 0; i < numBalls; i++) {
+      const s = seeds[numBalls + i]
+      const ux = snoise(t * 0.33 + s * 0.01)
+      const uy = snoise(t * 0.41 + s * 0.02)
+      const uz = snoise(t * 0.27 + s * 0.03)
+      const x = +gap + (ux * 0.45) * scaleX
+      const y = (uy * 0.55) * scaleY
+      const z = (uz * 0.65) * scaleZ
+      iso.addBall(0.5 + x, 0.5 + y, 0.5 + z, 0.06, strength)
+    }
+
+    // --- شیار میانی: یک plane با تاثیر منفی برای خالی‌کردن حوالی x=0 ---
+    // نرمالِ صفحه تقریباً محور X است تا در میانه بُرش بدهد.
+    iso.addPlane(0.5, 0.5, 0.5,  -1, 0, 0, 0.52) // (px,py,pz,nx,ny,nz,offset)
+
+    // رنگ و وایرفریم
+    ;(iso.material as THREE.MeshStandardMaterial).color = new THREE.Color(color)
+    ;(iso.material as THREE.MeshStandardMaterial).wireframe = true
+    ;(iso.material as THREE.MeshStandardMaterial).transparent = true
+    ;(iso.material as THREE.MeshStandardMaterial).opacity = 0.95
+    iso.isolation = 80 // آستانه‌ی ایزو‌سطح (با این مقدار فرم جمع‌وجورتر می‌شود)
   })
+
   return (
-    <mesh position={[x, 0, 0]}>
-      <icosahedronGeometry args={[1, 5]} />
-      {/* متریال شیدری با وایرفریم */}
-      <brainMaterial ref={matRef} />
-      <meshStandardMaterial wireframe transparent opacity={0.9} color={'#86a8c8'} />
-    </mesh>
+    // MarchingCubes واحدش 0..1 است؛ با scale بزرگش می‌کنیم
+    <group scale={[1.8, 1.8, 1.8]} position={[0, 0.05, 0]}>
+      {/* @ts-ignore */}
+      <marchingCubes ref={ref} args={[resolution, new THREE.MeshStandardMaterial(), true, true]} />
+    </group>
   )
 }
 
 export default function Brain() {
-  // کانتینر ثابت بالا-راست
   return (
-    <div className="fixed top-20 right-4 w-[360px] h-[360px] md:w-[460px] md:h-[460px] -z-0">
-      <Canvas camera={{ position: [0, 0, 4], fov: 45 }}>
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[4,4,4]} intensity={1.2} />
-        {/* دو نیم‌کره با کمی هم‌پوشانی برای حس مغز */}
-        <group rotation={[0.15, 0.1, 0]}>
-          <Hemisphere x={-0.58} />
-          <Hemisphere x={+0.58} />
-        </group>
-        {/* چرخش خودکار + چرخش با موس/تاچ */}
-        <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.6} rotateSpeed={0.6} />
+    <div className="fixed top-20 right-4 w-[360px] h-[360px] md:w-[480px] md:h-[480px] -z-0">
+      <Canvas camera={{ position: [0, 0, 4.2], fov: 45 }}>
+        <ambientLight intensity={0.7} />
+        <directionalLight position={[4, 5, 6]} intensity={1.4} />
+        <BrainIsosurface color="#86a8c8" resolution={32} />
+        <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.6} rotateSpeed={0.8} />
       </Canvas>
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-bg/10 to-bg/60" />
     </div>
   )
 }
