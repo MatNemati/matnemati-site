@@ -16,7 +16,7 @@ const LOBE_INFO: Record<string, Info> = {
 }
 
 function BrainMeshes({ color = '#66e0ff' }: { color?: string }) {
-  const { scene } = useGLTF('/models/scene.gltf') as any
+  const { scene } = useGLTF('/models/brain.glb') as any
   const group = useRef<THREE.Group>(null)
   const [hovered, setHovered] = useState<string | null>(null)
   const [selected, setSelected] = useState<string | null>(null)
