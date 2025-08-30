@@ -32,3 +32,6 @@ main .container, main section.card { text-align: center; }
 html, body {
   font-family: var(--font-plusjakarta), var(--font-vazir), ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
 }
+@media (min-width: 768px) {
+  main .container { padding-right: 520px; }
+}
