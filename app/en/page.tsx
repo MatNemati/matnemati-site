@@ -1,6 +1,6 @@
 
 import Header from '@/components/Header'
-import Brain from '@/components/Brain'
+import BrainProcedural from '@/components/BrainProcedural'
 import Section from '@/components/Section'
 import SmoothScroll from '@/components/SmoothScroll'
 import content from '@/content/en'
@@ -15,7 +15,7 @@ export default function Page() {
     <main className="ltr">
       <SmoothScroll />
       <Header lang="en" />
-      <Brain />
+      <BrainProcedural />
 
       {/* HERO */}
       <section id="home" className="container pt-10 space-y-6 md:pr-[480px]">
