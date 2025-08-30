@@ -1,4 +1,4 @@
-
+import BrainLabeled from '@/components/BrainLabeled'
 import Header from '@/components/Header'
 import BrainProcedural from '@/components/BrainProcedural'
 import Section from '@/components/Section'
@@ -15,6 +15,7 @@ export default function Page() {
       <SmoothScroll />
       <Header lang="fa" />
       <BrainProcedural />
+      <BrainLabeled />
 
       {/* HERO */}
       <section id="home" className="container pt-10 space-y-6 md:pr-[480px]">
