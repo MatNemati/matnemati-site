@@ -4,7 +4,6 @@ import Brain from '@/components/Brain'
 import Section from '@/components/Section'
 import SmoothScroll from '@/components/SmoothScroll'
 import content from '@/content/fa'
-import Background3D from '@/components/Background3D'
 
 
 export const dynamic = 'force-static'
@@ -13,7 +12,6 @@ export default function Page() {
   const c = content
   return (
     <main className="rtl">
-      <Background3D />
       <SmoothScroll />
       <Header lang="fa" />
       <Brain />
